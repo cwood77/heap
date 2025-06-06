@@ -16,6 +16,7 @@ public:
       std::cout << "  injecting hook template" << std::endl;
       o << "// wrap/hook main" << std::endl;
       o << "// (injected by instrument.exe)" << std::endl;
+      o << "// [gaudi:type-hint]exe" << std::endl;
       o << "HEAPLIB_MAIN" << (line.c_str()+8) << std::endl;
    }
 };

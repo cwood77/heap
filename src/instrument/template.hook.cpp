@@ -27,7 +27,7 @@ public:
       std::cout << "  injecting hook template" << std::endl;
       o << "// wrap/hook memory routines" << std::endl;
       o << "// (injected by instrument.exe)" << std::endl;
-      o << "#include \"../heaplib/hooks.hpp\"" << std::endl;
+      o << "#include \"../heaplib/hooks.h\"" << std::endl;
       o << std::endl;
       o << line << std::endl;
    }
