@@ -1,52 +1,38 @@
 #pragma once
 
-#include <stdexcept>
-#include <string>
 #include <map>
+#include <string>
 
 namespace demo {
 namespace impl {
 
-namespace types {
-enum t {
-   kScalarNew
-};
-} // namespace types;
-
-inline types::t parseType(const std::string& s)
-{
-   if(s == "new")
-      return types::kScalarNew;
-   else
-      throw std::runtime_error("can't parse type argument");
-}
-
-class iCommand {
+class iType {
 public:
-   virtual void run(types::t t) const = 0;
+   virtual void normal() const = 0;
+   virtual void leak() const = 0;
 };
 
-class commandRegistry {
+class typeRegistry {
 public:
-   static commandRegistry& get();
+   static typeRegistry& get();
 
-   void publish(const std::string& name, iCommand& c);
+   void publish(const std::string& name, iType& c);
 
-   iCommand& demand(const std::string& name);
+   iType& demand(const std::string& name);
 
 private:
-   commandRegistry() {}
-   commandRegistry(const commandRegistry&);
-   commandRegistry& operator=(const commandRegistry&);
+   typeRegistry() {}
+   typeRegistry(const typeRegistry&);
+   typeRegistry& operator=(const typeRegistry&);
 
-   std::map<std::string,iCommand*> m_map;
+   std::map<std::string,iType*> m_map;
 };
 
 template<class T>
-class autoCommand : private T {
+class autoType : private T {
 public:
-   explicit autoCommand(const std::string& name)
-   { commandRegistry::get().publish(name,*this); }
+   explicit autoType(const std::string& name)
+   { typeRegistry::get().publish(name,*this); }
 };
 
 } // namespace impl

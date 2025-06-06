@@ -1,5 +1,31 @@
 #include "cmd-i.hpp"
 #include <iostream>
+#include <stdexcept>
+
+namespace demo {
+namespace impl {
+
+typeRegistry& typeRegistry::get()
+{
+   static typeRegistry self;
+   return self;
+}
+
+void typeRegistry::publish(const std::string& name, iType& c)
+{
+   m_map[name] = &c;
+}
+
+iType& typeRegistry::demand(const std::string& name)
+{
+   auto it = m_map.find(name);
+   if(it == m_map.end())
+      throw std::runtime_error("type not supported");
+   return *it->second;
+}
+
+} // namespace impl
+} // namespace demo
 
 namespace {
 
@@ -10,17 +36,21 @@ void usage()
    std::cerr << std::endl;
    std::cerr << "commands include" << std::endl;
    std::cerr << "   normal       - do some safe memory operations" << std::endl;
+if(false) { // coming soon
    std::cerr << "   underflow    - write off the low end of the buffer" << std::endl;
    std::cerr << "   overflow     - write off the high end of the buffer" << std::endl;
    std::cerr << "   doubledelete - free the buffer twice" << std::endl;
+}
    std::cerr << "   leak         - leak the buffer" << std::endl;
    std::cerr << std::endl;
    std::cerr << "types include" << std::endl;
    std::cerr << "   scalarnew" << std::endl;
+if(false) { // coming soon
    std::cerr << "   arraynew" << std::endl;
    std::cerr << "   malloc" << std::endl;
    std::cerr << "   calloc" << std::endl;
    std::cerr << "   strdup" << std::endl;
+}
 }
 
 } // anonymous namespace
@@ -39,7 +69,15 @@ int main(int argc, const char *argv[])
    try
    {
       std::cout << "starting" << std::endl;
-      commandRegistry::get().demand(argv[1]).run(parseType(argv[2]));
+
+      auto& t = typeRegistry::get().demand(argv[2]);
+      const std::string command = argv[1];
+      if(command == "normal")
+         t.normal();
+      else if(command == "leak")
+         t.leak();
+      else
+         throw std::runtime_error("command not supported");
 
       std::cout << "exiting main" << std::endl;
       return 0;
