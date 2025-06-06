@@ -64,13 +64,12 @@ int main(int argc, const char *argv[])
    }
 
    using namespace demo;
-   using namespace demo::impl;
 
    try
    {
       std::cout << "starting" << std::endl;
 
-      auto& t = typeRegistry::get().demand(argv[2]);
+      auto& t = impl::typeRegistry::get().demand(argv[2]);
       const std::string command = argv[1];
       if(command == "normal")
          t.normal();

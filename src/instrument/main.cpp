@@ -27,6 +27,9 @@ void usage()
    std::cerr << std::endl;
    std::cerr << "note that un-instrumenting isn't supported, so save a copy" << std::endl;
    std::cerr << "of the source before running!!" << std::endl;
+   std::cerr << std::endl;
+   std::cerr << "note that instrumentation is far from perfect. Please review" << std::endl;
+   std::cerr << "all changes!" << std::endl;
 }
 
 } // anonymous namespace
@@ -40,20 +43,19 @@ int main(int argc, const char *argv[])
    }
 
    using namespace instrument;
-   using namespace instrument::impl;
 
    try
    {
       std::cout << "starting" << std::endl;
 
-      saver s;
-      instrumentor i(s);
+      impl::saver s;
+      impl::instrumentor i(s);
 
       const std::string opt = argv[1];
       if(opt == "-1")
          i.instrumentFile(argv[2]);
       else if(opt == "-r")
-         finder(i).recurse(argv[2]);
+         impl::finder(i).recurse(argv[2]);
       else
          throw std::runtime_error("option not supported");
 
