@@ -12,6 +12,7 @@ static heapbin::iHeapIntf& loadbin()
 
    static HMODULE hLib = NULL;
    hLib = ::LoadLibraryA("heapbin.dll");
+   ::LoadLibraryA("heapbin.dll"); // once more for good measure
    if(!hLib)
       throw std::runtime_error("cannot load heapbin.dll");
 
@@ -26,15 +27,25 @@ static heapbin::iHeapIntf& loadbin()
 
 extern "C" void *heaplib_new(size_t z)
 {
-   return loadbin().new_thunk(z);
+   return loadbin().new_thunk(z,callsiteHere());
 }
 
 extern "C" void heaplib_delete(void *ptr)
 {
-   loadbin().delete_thunk(ptr);
+   loadbin().delete_thunk(ptr,callsiteHere());
 }
 
 extern "C" int heaplib_main(int argc, const char *argv[], heaplib_inner_main_f f)
 {
    return loadbin().main_thunk(argc,argv,(heapbin::inner_main_f)f);
+}
+
+void *operator new(std::size_t z)
+{
+   return heaplib_new(z);
+}
+
+void operator delete(void* p) _GLIBCXX_USE_NOEXCEPT
+{
+   heaplib_delete(p);
 }

@@ -2,18 +2,13 @@
 #include "api.h"
 
 #ifdef __cplusplus
+#include <new>
 #include <exception>
 #endif
 
 #ifdef __cplusplus
-inline void *operator new(std::size_t z)
-{
-   return heaplib_new(z);
-}
-inline void operator delete(void *p)
-{
-   heaplib_delete(p);
-}
+void *operator new(std::size_t z);
+void operator delete(void* p) _GLIBCXX_USE_NOEXCEPT;
 #endif
 
 #define HEAPLIB_MAIN \

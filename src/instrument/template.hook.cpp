@@ -8,7 +8,7 @@ class Template : public impl::iTemplate {
 public:
    virtual bool shouldInject(const std::string& line)
    {
-#if 0
+#if 1
       if(line.empty())
          return false;
 

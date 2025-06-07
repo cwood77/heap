@@ -1,19 +1,10 @@
 #pragma once
 #include <map>
 #include <string>
+#include "api.hpp"
 
 namespace heapbin {
 namespace impl {
-
-#define callsiteHere() ::heapbin::impl::callsite(__FUNCTION__,__FILE__,__LINE__)
-class callsite {
-public:
-   callsite(const char *u, const char *f, int l) : func(u), file(f), line(l) {}
-
-   const char *func;
-   const char *file;
-   int line;
-};
 
 class allocFlags {
 public:
@@ -27,9 +18,10 @@ public:
 
 class iHeap {
 public:
-   virtual void push() = 0;
-   virtual void pop() = 0;
+   static iHeap& get();
 
+   // guard size
+   // breakpoints
    virtual void configure(
       std::map<std::string,int>& settings,
       const callsite& cs) = 0;
@@ -45,15 +37,10 @@ public:
       void *ptr,
       const callsite& cs) = 0;
 
-   virtual void checkConsistency(
-      const callsite& cs) = 0;
-   virtual void checkEnd(
-      const callsite& cs) = 0;
+   virtual void checkConsistency(const callsite& cs) = 0;
+   virtual void dumpStats(const callsite& cs) = 0;
+   virtual void dumpOutstanding(const callsite& cs) = 0;
 };
-
-extern iHeap *gHeadHeap;
-extern iHeap& primordialHeap();
-extern iHeap& guardedHeap();
 
 } // namespace impl
 } // namespace heapbin
