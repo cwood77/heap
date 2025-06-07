@@ -8,28 +8,21 @@ namespace heapbin {
 namespace {
 using namespace impl;
 
-class heapIntf : public iHeapIntf {
+class intf : public iLibIntf {
 public:
-   virtual void *new_thunk(size_t z, const callsite& cs) const
+   virtual iHeap& heap()
    {
-      return iHeap::get().alloc(1,z,allocFlags::opNew(),cs);
-   }
-
-   virtual void delete_thunk(void *ptr, const callsite& cs) const
-   {
-      iHeap::get().free(ptr,cs);
+      throw 3.14;
    }
 
    virtual int main_thunk(int argc, const char *argv[], inner_main_f inner) const
    {
       std::cout << "heap{{" << std::endl;
-      iHeap::get().dumpStats(callsiteHere());
 
       std::cout << "program-main{{" << std::endl;
       auto rval = inner(argc,argv);
       std::cout << "}}program-main" << std::endl;
 
-      iHeap::get().dumpOutstanding(callsiteHere());
       std::cout << "}}heap" << std::endl;
       return rval;
    }
@@ -38,9 +31,9 @@ public:
 } // anonymous namespace
 } // namespace heapbin
 
-extern "C" heapbin::iHeapIntf *getHeapIntf()
+extern "C" heapbin::iLibIntf *getIntf()
 {
-   static heapbin::heapIntf gIntf;
+   static heapbin::intf gIntf;
    static bool setup = false;
    if(!setup)
    {

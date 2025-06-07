@@ -1,9 +1,8 @@
-#include "heap-i.hpp"
+#include "api.hpp"
 #include <iostream>
 #include <stdexcept>
 
 namespace heapbin {
-namespace impl {
 namespace {
 
 class heap : public iHeap {
@@ -72,8 +71,9 @@ void heap::dumpOutstanding(const callsite& cs)
 }
 
 } // anonymous namespace
+namespace impl {
 
-iHeap& iHeap::get() { return gHeap; }
+iHeap& getHeap() { return gHeap; }
 
 } // namespace impl
 } // namespace heapbin

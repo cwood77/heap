@@ -65,7 +65,8 @@ private:
          {
             pTmpt->inject(line,m_o);
             m_madeChanges = true;
-            m_templates.erase(pTmpt);
+            if(pTmpt->done())
+               m_templates.erase(pTmpt);
             return;
          }
       }

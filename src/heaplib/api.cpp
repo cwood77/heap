@@ -1,14 +1,15 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../heapbin/api.hpp"
 #include "api.h"
+#include "probe.hpp"
 #include <stdexcept>
 #include <windows.h>
 
-static heapbin::iHeapIntf& loadbin()
+static heapbin::iLibIntf& loadbin()
 {
-   static heapbin::iHeapIntf *pHeap = NULL;
-   if(pHeap)
-      return *pHeap;
+   static heapbin::iLibIntf *pLib = NULL;
+   if(pLib)
+      return *pLib;
 
    static HMODULE hLib = NULL;
    hLib = ::LoadLibraryA("heapbin.dll");
@@ -16,23 +17,13 @@ static heapbin::iHeapIntf& loadbin()
    if(!hLib)
       throw std::runtime_error("cannot load heapbin.dll");
 
-   typedef heapbin::iHeapIntf *(*func_t)();
-   auto f = (func_t)::GetProcAddress(hLib,"getHeapIntf");
+   typedef heapbin::iLibIntf *(*func_t)();
+   auto f = (func_t)::GetProcAddress(hLib,"getIntf");
    if(!f)
       throw std::runtime_error("cannot link heapbin.dll");
 
-   pHeap = f();
-   return *pHeap;
-}
-
-extern "C" void *heaplib_new(size_t z)
-{
-   return loadbin().new_thunk(z,callsiteHere());
-}
-
-extern "C" void heaplib_delete(void *ptr)
-{
-   loadbin().delete_thunk(ptr,callsiteHere());
+   pLib = f();
+   return *pLib;
 }
 
 extern "C" int heaplib_main(int argc, const char *argv[], heaplib_inner_main_f f)
@@ -40,12 +31,23 @@ extern "C" int heaplib_main(int argc, const char *argv[], heaplib_inner_main_f f
    return loadbin().main_thunk(argc,argv,(heapbin::inner_main_f)f);
 }
 
-void *operator new(std::size_t z)
+namespace heaplib {
+
+probe::probe()
 {
-   return heaplib_new(z);
 }
 
-void operator delete(void* p) _GLIBCXX_USE_NOEXCEPT
+probe::probe(const probe&)
 {
-   heaplib_delete(p);
 }
+
+probe::~probe()
+{
+}
+
+probe& probe::operator=(const probe&)
+{
+   return *this;
+}
+
+} // namespace heaplib

@@ -13,6 +13,7 @@ class iTemplate {
 public:
    virtual bool shouldInject(const std::string& line) = 0;
    virtual void inject(const std::string& line, std::ostream& o) = 0;
+   virtual bool done() = 0;
 };
 
 class templateRegistry {

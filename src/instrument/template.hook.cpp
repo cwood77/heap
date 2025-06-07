@@ -8,7 +8,7 @@ class Template : public impl::iTemplate {
 public:
    virtual bool shouldInject(const std::string& line)
    {
-#if 1
+#if 0
       if(line.empty())
          return false;
 
@@ -28,9 +28,12 @@ public:
       o << "// wrap/hook memory routines" << std::endl;
       o << "// (injected by instrument.exe)" << std::endl;
       o << "#include \"../heaplib/hooks.h\"" << std::endl;
+      o << "#include \"../heaplib/probe.hpp\"" << std::endl;
       o << std::endl;
       o << line << std::endl;
    }
+
+   virtual bool done() { return true; }
 };
 
 impl::autoTemplate<Template> gTemplate;

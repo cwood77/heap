@@ -19,6 +19,8 @@ public:
       o << "// [gaudi:type-hint]exe" << std::endl;
       o << "HEAPLIB_MAIN" << (line.c_str()+8) << std::endl;
    }
+
+   virtual bool done() { return true; }
 };
 
 impl::autoTemplate<Template> gTemplate;
