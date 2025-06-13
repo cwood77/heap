@@ -1,3 +1,8 @@
+// wrap/hook memory routines
+// (injected by instrument.exe)
+#include "../heaplib/hooks.h"
+#include "../heaplib/probe.hpp"
+
 #include "cmd-i.hpp"
 #include <iostream>
 
@@ -23,6 +28,9 @@ public:
       std::cout << "leaking stuff" << std::endl;
       new int;
    }
+
+private:
+   HEAPLIB_PROBE();
 };
 
 impl::autoType<type> gType("scalarnew");

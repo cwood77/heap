@@ -1,3 +1,8 @@
+// wrap/hook memory routines
+// (injected by instrument.exe)
+#include "../heaplib/hooks.h"
+#include "../heaplib/probe.hpp"
+
 #include "cmd-i.hpp"
 #include <iostream>
 #include <stdexcept>
@@ -55,7 +60,10 @@ if(false) { // coming soon
 
 } // anonymous namespace
 
-int main(int argc, const char *argv[])
+// wrap/hook main
+// (injected by instrument.exe)
+// [gaudi:type-hint]exe
+HEAPLIB_MAIN(int argc, const char *argv[])
 {
    if(argc!=3)
    {

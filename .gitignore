@@ -1,3 +1,2 @@
+bin/
 *.swp
-/bin2/*
-!/bin2/int/makefile

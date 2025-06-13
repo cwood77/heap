@@ -25,7 +25,7 @@ public:
    bool clearMem;
 };
 
-class iHeap {
+class iTracker {
 public:
    // guard size
    // breakpoints
@@ -33,6 +33,13 @@ public:
       std::map<std::string,int>& settings,
       const callsite& cs) = 0;
 
+   virtual void checkConsistency(const callsite& cs) = 0;
+   virtual void dumpStats(const callsite& cs) = 0;
+   virtual void dumpOutstanding(const callsite& cs) = 0;
+};
+
+class iHeap : public iTracker {
+public:
    virtual void *alloc(
       size_t n, size_t z,
       const allocFlags& f,
@@ -43,18 +50,26 @@ public:
    virtual void free(
       void *ptr,
       const callsite& cs) = 0;
+};
 
-   virtual void checkConsistency(const callsite& cs) = 0;
-   virtual void dumpStats(const callsite& cs) = 0;
-   virtual void dumpOutstanding(const callsite& cs) = 0;
+class iProbes : public iTracker {
+public:
+   virtual void add(
+      void *p,
+      const callsite& cs) = 0;
+
+   virtual void remove(
+      void *p) = 0;
 };
 
 typedef int (*inner_main_f)(int,const char*[]);
 
 class iLibIntf {
 public:
-   virtual iHeap& heap();
-   virtual int main_thunk(int argc, const char *argv[], inner_main_f inner) const = 0;
+   virtual iTracker& allTrackers() = 0;
+   virtual iHeap& heap() = 0;
+   virtual iProbes& probes() = 0;
+   virtual int main_thunk(int argc, const char *argv[], inner_main_f inner) = 0;
 };
 
 } // namespace heapbin

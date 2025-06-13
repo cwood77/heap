@@ -2,15 +2,27 @@
 
 namespace heaplib {
 
-#define HEAPLIB_PROBE() foo
+class probeBase {
+protected:
+   static void onCtor(void *p, const char *file, unsigned long line);
+   static void onDtor(void *p);
+};
 
-class probe {
+#define HEAPLIB_PROBE() \
+   struct _info { \
+      static const char *getFile() { return __FILE__; } \
+      static unsigned long getLine() { return __LINE__; } \
+   }; \
+   ::heaplib::probe<_info> _p;
+
+template<class T>
+class probe : private probeBase {
 public:
-   probe();
-   probe(const probe&);
-   ~probe();
+   probe() { onCtor(this,T::getFile(),T::getLine()); }
+   ~probe() { onDtor(this); }
 
-   probe& operator=(const probe&);
+   probe(const probe<T>&) {}
+   probe<T>& operator=(const probe<T>&) { return *this; }
 };
 
 } // namespace heaplib

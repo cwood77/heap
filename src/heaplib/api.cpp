@@ -26,28 +26,27 @@ static heapbin::iLibIntf& loadbin()
    return *pLib;
 }
 
+// C API
+// =================================================================================
+
 extern "C" int heaplib_main(int argc, const char *argv[], heaplib_inner_main_f f)
 {
    return loadbin().main_thunk(argc,argv,(heapbin::inner_main_f)f);
 }
 
+// C++ API
+// =================================================================================
+
 namespace heaplib {
 
-probe::probe()
+void probeBase::onCtor(void *p, const char *file, unsigned long line)
 {
+   loadbin().probes().add(p,heapbin::callsite("",file,line));
 }
 
-probe::probe(const probe&)
+void probeBase::onDtor(void *p)
 {
-}
-
-probe::~probe()
-{
-}
-
-probe& probe::operator=(const probe&)
-{
-   return *this;
+   loadbin().probes().remove(p);
 }
 
 } // namespace heaplib
